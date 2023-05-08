@@ -17,7 +17,14 @@ export default class ContentPresenter {
     this.destinations = [...this.eventsModel.getDestinations()];
 
     render(this.contentListComponent, this.contentContainer);
-    render(new EventFormView(), this.contentListComponent.getElement());
+    render(
+      new EventFormView({
+        event: this.events[0],
+        offers: this.offers,
+        destinations: this.destinations,
+      }),
+      this.contentListComponent.getElement()
+    );
 
     for (let i = 0; i < this.events.length; i++) {
       render(

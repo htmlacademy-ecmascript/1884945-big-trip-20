@@ -23,7 +23,7 @@ const events = [
     offers: ['1', '2'],
   },
   {
-    id: '2',
+    id: '3',
     basePrice: getRandomInteger(10, 5000),
     dateFrom: '2019-07-10T22:55:56.845Z',
     dateTo: '2019-07-11T11:22:13.375Z',
