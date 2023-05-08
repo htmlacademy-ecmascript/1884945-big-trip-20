@@ -6,16 +6,28 @@ import EventView from '../view/event-view.js';
 export default class ContentPresenter {
   contentListComponent = new ContentListView();
 
-  constructor({ contentContainer }) {
+  constructor({ contentContainer, eventsModel }) {
     this.contentContainer = contentContainer;
+    this.eventsModel = eventsModel;
   }
 
   init() {
+    this.events = [...this.eventsModel.getEvents()];
+    this.offers = [...this.eventsModel.getOffers()];
+    this.destinations = [...this.eventsModel.getDestinations()];
+
     render(this.contentListComponent, this.contentContainer);
     render(new EventFormView(), this.contentListComponent.getElement());
 
-    for (let i = 0; i < 3; i++) {
-      render(new EventView(), this.contentListComponent.getElement());
+    for (let i = 0; i < this.events.length; i++) {
+      render(
+        new EventView({
+          event: this.events[i],
+          offers: this.offers,
+          destinations: this.destinations,
+        }),
+        this.contentListComponent.getElement()
+      );
     }
   }
 }
