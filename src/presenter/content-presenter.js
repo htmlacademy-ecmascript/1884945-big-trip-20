@@ -1,4 +1,4 @@
-import { render } from '../render.js';
+import { render } from '../framework/render.js';
 import ContentListView from '../view/content-list-view.js';
 import EventFormView from '../view/event-form-view.js';
 import EventView from '../view/event-view.js';
@@ -23,7 +23,7 @@ export default class ContentPresenter {
         offers: this.offers,
         destinations: this.destinations,
       }),
-      this.contentListComponent.getElement()
+      this.contentListComponent.element
     );
 
     for (let i = 0; i < this.events.length; i++) {
@@ -33,7 +33,7 @@ export default class ContentPresenter {
           offers: this.offers,
           destinations: this.destinations,
         }),
-        this.contentListComponent.getElement()
+        this.contentListComponent.element
       );
     }
   }
