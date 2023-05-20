@@ -137,14 +137,34 @@ const createEventFormTemplate = (event, allOffers, allDestinations) => {
 };
 
 export default class EventFormView extends AbstractView {
-  constructor({ event, offers, destinations }) {
+  constructor({ event, offers, destinations, onFormSubmit, onRollUpClick }) {
     super();
     this.event = event;
     this.offers = offers;
     this.destinations = destinations;
+    this.handleFormSubmit = onFormSubmit;
+    this.handleRollUpClick = onRollUpClick;
+
+    this.element
+      .querySelector('form')
+      .addEventListener('submit', this.formSubmitHandler);
+
+    this.element
+      .querySelector('.event__rollup-btn')
+      .addEventListener('click', this.rollUpButtonClick);
   }
 
   get template() {
     return createEventFormTemplate(this.event, this.offers, this.destinations);
   }
+
+  formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this.handleFormSubmit();
+  };
+
+  rollUpButtonClick = (evt) => {
+    evt.preventDefault();
+    this.handleRollUpClick();
+  };
 }
