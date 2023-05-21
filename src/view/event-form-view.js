@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { EVENT_TYPES } from '../const';
 import { humanizeEventDate, FULL_DATE_FORMAT } from '../utils.js';
 
@@ -136,26 +136,35 @@ const createEventFormTemplate = (event, allOffers, allDestinations) => {
       `;
 };
 
-export default class EventFormView {
-  constructor({ event, offers, destinations }) {
+export default class EventFormView extends AbstractView {
+  constructor({ event, offers, destinations, onFormSubmit, onRollUpClick }) {
+    super();
     this.event = event;
     this.offers = offers;
     this.destinations = destinations;
+    this.handleFormSubmit = onFormSubmit;
+    this.handleRollUpClick = onRollUpClick;
+
+    this.element
+      .querySelector('form')
+      .addEventListener('submit', this.formSubmitHandler);
+
+    this.element
+      .querySelector('.event__rollup-btn')
+      .addEventListener('click', this.rollUpButtonClick);
   }
 
-  getTemplate() {
+  get template() {
     return createEventFormTemplate(this.event, this.offers, this.destinations);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
+  formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this.handleFormSubmit();
+  };
 
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
+  rollUpButtonClick = (evt) => {
+    evt.preventDefault();
+    this.handleRollUpClick();
+  };
 }
