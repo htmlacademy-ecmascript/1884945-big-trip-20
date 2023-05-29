@@ -1,6 +1,8 @@
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import duration from 'dayjs/plugin/duration';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 
 const DATE_FORMAT = 'MMM D';
 const TIME_FORMAT = 'HH:mm';
@@ -14,9 +16,11 @@ const MS_IN_DAY = 86400000;
 
 dayjs.extend(utc);
 dayjs.extend(duration);
+dayjs.extend(isSameOrAfter);
+dayjs.extend(isSameOrBefore);
 
 function humanizeEventDate(time, format) {
-  return time ? dayjs(time).utc().format(format) : '';
+  return time ? dayjs(time).format(format) : '';
 }
 
 const countTimeDuration = (startDate, endDate) => {
@@ -56,6 +60,25 @@ const getRandomArrayElement = (elements) =>
 
 const isEscapeKey = (evt) => evt.key === 'Escape';
 
+const isEventDateExpired = (endDate) =>
+  endDate && dayjs().isAfter(endDate, 'D');
+
+const isEventDateInFuture = (startDate) =>
+  startDate && dayjs().isBefore(startDate, 'D');
+
+const isEventDateInPresent = (startDate, endDate) => {
+  const startIsSameOrBeforeToday = dayjs().isSameOrAfter(
+    dayjs(startDate),
+    'day'
+  );
+  const endIsSameOrAfterToday = dayjs().isSameOrBefore(
+    dayjs(endDate).format(),
+    'D'
+  );
+
+  return startIsSameOrBeforeToday && endIsSameOrAfterToday;
+};
+
 export {
   humanizeEventDate,
   countTimeDuration,
@@ -65,4 +88,7 @@ export {
   DATE_FORMAT,
   TIME_FORMAT,
   isEscapeKey,
+  isEventDateExpired,
+  isEventDateInFuture,
+  isEventDateInPresent,
 };
