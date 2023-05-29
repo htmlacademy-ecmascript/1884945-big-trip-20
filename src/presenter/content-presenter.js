@@ -22,9 +22,9 @@ export default class ContentPresenter {
     if (!this.events.length) {
       this.renderMessage();
     } else {
-      for (let i = 0; i < this.events.length; i++) {
+      for (const event of this.events) {
         this.renderEvent({
-          event: this.events[i],
+          event: event,
           offers: this.offers,
           destinations: this.destinations,
         });
