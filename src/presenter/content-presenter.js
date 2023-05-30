@@ -2,6 +2,7 @@ import { render, replace } from '../framework/render.js';
 import ContentListView from '../view/content-list-view.js';
 import EventFormView from '../view/event-form-view.js';
 import EventView from '../view/event-view.js';
+import EmptyContentListMessageView from '../view/empty-content-list-message-view.js';
 import { isEscapeKey } from '../utils.js';
 
 export default class ContentPresenter {
@@ -18,13 +19,16 @@ export default class ContentPresenter {
     this.destinations = [...this.eventsModel.getDestinations()];
 
     render(this.contentListComponent, this.contentContainer);
-
-    for (let i = 0; i < this.events.length; i++) {
-      this.renderEvent({
-        event: this.events[i],
-        offers: this.offers,
-        destinations: this.destinations,
-      });
+    if (!this.events.length) {
+      this.renderMessage();
+    } else {
+      for (const event of this.events) {
+        this.renderEvent({
+          event: event,
+          offers: this.offers,
+          destinations: this.destinations,
+        });
+      }
     }
   }
 
@@ -70,5 +74,10 @@ export default class ContentPresenter {
     }
 
     render(eventComponent, this.contentListComponent.element);
+  }
+
+  renderMessage() {
+    const emptyContentListMessageComponent = new EmptyContentListMessageView();
+    render(emptyContentListMessageComponent, this.contentListComponent.element);
   }
 }

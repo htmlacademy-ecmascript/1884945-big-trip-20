@@ -5,8 +5,8 @@ const events = [
   {
     id: '1',
     basePrice: getRandomInteger(10, 5000),
-    dateFrom: '2019-07-10T22:55:56.845Z',
-    dateTo: '2019-07-11T11:22:13.375Z',
+    dateFrom: '2023-06-15T15:20:13.375Z',
+    dateTo: '2023-06-15T16:15:13.375Z',
     destination: getRandomInteger(1, 4),
     isFavorite: false,
     type: EVENT_TYPES.TAXI,
@@ -15,8 +15,8 @@ const events = [
   {
     id: '2',
     basePrice: getRandomInteger(10, 5000),
-    dateFrom: '2019-07-10T22:55:56.845Z',
-    dateTo: '2019-07-11T11:22:13.375Z',
+    dateFrom: '2023-05-12T22:55:56.845Z',
+    dateTo: '2023-05-12T23:23:13.375Z',
     destination: getRandomInteger(1, 4),
     isFavorite: true,
     type: EVENT_TYPES.TRAIN,
@@ -25,8 +25,8 @@ const events = [
   {
     id: '3',
     basePrice: getRandomInteger(10, 5000),
-    dateFrom: '2019-07-10T22:55:56.845Z',
-    dateTo: '2019-07-11T11:22:13.375Z',
+    dateFrom: '2023-05-11T14:20:13.375Z',
+    dateTo: '2023-05-17T22:50:13.375Z',
     destination: getRandomInteger(1, 4),
     isFavorite: false,
     type: EVENT_TYPES.RESTAURANT,

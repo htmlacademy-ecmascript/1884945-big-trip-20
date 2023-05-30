@@ -35,4 +35,11 @@ const DESCRIPTIONS = [
 
 const PHOTO_URL = 'https://loremflickr.com/248/152?random=';
 
-export { EVENT_TYPES, OFFERS, DESCRIPTIONS, PHOTO_URL };
+const FILTER_TYPES = {
+  EVERYTHING: 'Everything',
+  FUTURE: 'Future',
+  PRESENT: 'Present',
+  PAST: 'Past',
+};
+
+export { EVENT_TYPES, OFFERS, DESCRIPTIONS, PHOTO_URL, FILTER_TYPES };
