@@ -1,9 +1,7 @@
-import { render, replace } from '../framework/render.js';
+import { render } from '../framework/render.js';
 import ContentListView from '../view/content-list-view.js';
-import EventFormView from '../view/event-form-view.js';
-import EventView from '../view/event-view.js';
 import EmptyContentListMessageView from '../view/empty-content-list-message-view.js';
-import { isEscapeKey } from '../utils.js';
+import EventPresenter from './event-presenter.js';
 
 export default class ContentPresenter {
   contentListComponent = new ContentListView();
@@ -18,66 +16,37 @@ export default class ContentPresenter {
     this.offers = [...this.eventsModel.getOffers()];
     this.destinations = [...this.eventsModel.getDestinations()];
 
-    render(this.contentListComponent, this.contentContainer);
+    this.renderContentBoard();
     if (!this.events.length) {
       this.renderMessage();
     } else {
-      for (const event of this.events) {
-        this.renderEvent({
-          event: event,
-          offers: this.offers,
-          destinations: this.destinations,
-        });
-      }
+      this.renderEvents();
     }
   }
 
   renderEvent({ event, offers, destinations }) {
-    const eventComponent = new EventView({
-      event,
-      offers,
-      destinations,
-      onEditClick: () => {
-        replaceEventToEventForm();
-        document.addEventListener('keydown', onEscKey);
-      },
+    const eventPresenter = new EventPresenter({
+      contentListComponent: this.contentListComponent,
     });
+    eventPresenter.init({ event, offers, destinations });
+  }
 
-    const eventFormComponent = new EventFormView({
-      event,
-      offers,
-      destinations,
-      onFormSubmit: () => {
-        replaceEventFormToEvent();
-        document.removeEventListener('keydown', onEscKey);
-      },
-      onRollUpClick: () => {
-        replaceEventFormToEvent();
-        document.removeEventListener('keydown', onEscKey);
-      },
-    });
-
-    function onEscKey(evt) {
-      if (isEscapeKey(evt)) {
-        evt.preventDefault();
-        replaceEventFormToEvent();
-        document.removeEventListener('keydown', onEscKey);
-      }
+  renderEvents() {
+    for (const event of this.events) {
+      this.renderEvent({
+        event: event,
+        offers: this.offers,
+        destinations: this.destinations,
+      });
     }
-
-    function replaceEventToEventForm() {
-      replace(eventFormComponent, eventComponent);
-    }
-
-    function replaceEventFormToEvent() {
-      replace(eventComponent, eventFormComponent);
-    }
-
-    render(eventComponent, this.contentListComponent.element);
   }
 
   renderMessage() {
     const emptyContentListMessageComponent = new EmptyContentListMessageView();
     render(emptyContentListMessageComponent, this.contentListComponent.element);
+  }
+
+  renderContentBoard() {
+    render(this.contentListComponent, this.contentContainer);
   }
 }
