@@ -5,6 +5,7 @@ import EventPresenter from './event-presenter.js';
 
 export default class ContentPresenter {
   contentListComponent = new ContentListView();
+  eventPresenters = new Map();
 
   constructor({ contentContainer, eventsModel }) {
     this.contentContainer = contentContainer;
@@ -29,6 +30,7 @@ export default class ContentPresenter {
       contentListComponent: this.contentListComponent,
     });
     eventPresenter.init({ event, offers, destinations });
+    this.eventPresenters.set(event.id, eventPresenter);
   }
 
   renderEvents() {
@@ -39,6 +41,11 @@ export default class ContentPresenter {
         destinations: this.destinations,
       });
     }
+  }
+
+  clearEvents() {
+    this.eventPresenters.forEach((presenter) => presenter.destroy());
+    this.eventPresenters.clear();
   }
 
   renderMessage() {
