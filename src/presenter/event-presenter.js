@@ -7,15 +7,15 @@ export default class EventPresenter {
   eventComponent = null;
   eventFormComponent = null;
 
-  constructor({ contentListComponent }) {
+  constructor({ contentListComponent, offers, destinations, onDataChange }) {
     this.contentListComponent = contentListComponent;
-  }
-
-  init({ event, offers, destinations }) {
-    this.event = event;
     this.offers = offers;
     this.destinations = destinations;
+    this.handleDataChange = onDataChange;
+  }
 
+  init(event) {
+    this.event = event;
     const prevEventComponent = this.eventComponent;
     const prevEventFormComponent = this.eventFormComponent;
 
@@ -26,12 +26,13 @@ export default class EventPresenter {
       onEditClick: () => {
         this.replaceEventToEventForm();
       },
+      onFavoriteClick: this.handleFavoriteClick,
     });
 
     this.eventFormComponent = new EventFormView({
-      event,
-      offers,
-      destinations,
+      event: this.event,
+      offers: this.offers,
+      destinations: this.destinations,
       onFormSubmit: () => {
         this.replaceEventFormToEvent();
       },
@@ -47,7 +48,7 @@ export default class EventPresenter {
     if (
       this.contentListComponent.element.contains(prevEventComponent?.element)
     ) {
-      replace(this.pointComponent, prevEventComponent);
+      replace(this.eventComponent, prevEventComponent);
     }
 
     if (
@@ -83,4 +84,11 @@ export default class EventPresenter {
     replace(this.eventComponent, this.eventFormComponent);
     document.removeEventListener('keydown', this.onEscKey);
   }
+
+  handleFavoriteClick = () => {
+    this.handleDataChange({
+      ...this.event,
+      isFavorite: !this.event.isFavorite,
+    });
+  };
 }

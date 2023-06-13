@@ -2,6 +2,7 @@ import { render } from '../framework/render.js';
 import ContentListView from '../view/content-list-view.js';
 import EmptyContentListMessageView from '../view/empty-content-list-message-view.js';
 import EventPresenter from './event-presenter.js';
+import { updateItem } from '../utils.js';
 
 export default class ContentPresenter {
   contentListComponent = new ContentListView();
@@ -25,22 +26,30 @@ export default class ContentPresenter {
     }
   }
 
-  renderEvent({ event, offers, destinations }) {
+  handleEventChange = (updateEvent) => {
+    this.events = updateItem(this.events, updateEvent);
+    this.eventPresenters.get(updateEvent.id).init(updateEvent);
+  };
+
+  renderEvent(event, offers, destinations) {
     const eventPresenter = new EventPresenter({
       contentListComponent: this.contentListComponent,
+      offers: offers,
+      destinations: destinations,
+      onDataChange: this.handleEventChange,
     });
-    eventPresenter.init({ event, offers, destinations });
+    eventPresenter.init(event);
     this.eventPresenters.set(event.id, eventPresenter);
   }
 
   renderEvents() {
-    for (const event of this.events) {
-      this.renderEvent({
-        event: event,
-        offers: this.offers,
-        destinations: this.destinations,
-      });
-    }
+    this.events.forEach((event) => {
+      this.renderEvent(
+        event,
+        this.eventsModel.getOffersByType(event.type),
+        this.eventsModel.getDestinationById(String(event.destination))
+      );
+    });
   }
 
   clearEvents() {

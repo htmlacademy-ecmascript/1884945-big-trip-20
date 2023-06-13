@@ -2,15 +2,15 @@ import AbstractView from '../framework/view/abstract-view.js';
 import { EVENT_TYPES } from '../const';
 import { humanizeEventDate, FULL_DATE_FORMAT } from '../utils.js';
 
-const createEventFormTemplate = (event, allOffers, allDestinations) => {
-  const { basePrice, dateFrom, dateTo, destination, offers, type } = event;
+const createEventFormTemplate = (event, offersByType, destinationById) => {
+  const { basePrice, dateFrom, dateTo, offers, type } = event;
   const timeFrom = humanizeEventDate(dateFrom, FULL_DATE_FORMAT);
   const timeTo = humanizeEventDate(dateTo, FULL_DATE_FORMAT);
 
-  const findEventDestination = (randomDestination) =>
-    allDestinations.find((item) => String(randomDestination).includes(item.id));
+  // const findEventDestination = (randomDestination) =>
+  //   allDestinations.find((item) => String(randomDestination).includes(item.id));
 
-  const eventDestination = findEventDestination(destination);
+  // const eventDestination = findEventDestination(destination);
 
   const createTypesChooserTemplate = (eventTypes) =>
     Object.values(eventTypes)
@@ -23,12 +23,8 @@ const createEventFormTemplate = (event, allOffers, allDestinations) => {
       )
       .join('');
 
-  const createOffersTemplate = (eventType) => {
-    const pointTypeOffers = allOffers.find(
-      (item) => item.type === eventType
-    ).offers;
-
-    return pointTypeOffers
+  const createOffersTemplate = () => {
+    offersByType
       .map((offer) => {
         const checked = offers.includes(offer.id) ? 'checked' : '';
 
@@ -92,7 +88,7 @@ const createEventFormTemplate = (event, allOffers, allDestinations) => {
               id="event-destination-1"
               type="text"
               name="event-destination"
-              value="${eventDestination.name}"
+              value="${destinationById.name}"
               list="destination-list-1">
             <datalist id="destination-list-1">
               <option value="Amsterdam"></option>
@@ -128,7 +124,7 @@ const createEventFormTemplate = (event, allOffers, allDestinations) => {
           </section>
           <section class="event__section  event__section--destination">
             <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-            ${createDestinationDescriptionTemplate(eventDestination)}
+            ${createDestinationDescriptionTemplate(destinationById)}
           </section>
           </section>
           </form>
