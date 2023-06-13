@@ -31,12 +31,17 @@ export default class ContentPresenter {
     this.eventPresenters.get(updateEvent.id).init(updateEvent);
   };
 
+  handleModeChange = () => {
+    this.eventPresenters.forEach((presenter) => presenter.resetView());
+  };
+
   renderEvent(event, offers, destinations) {
     const eventPresenter = new EventPresenter({
       contentListComponent: this.contentListComponent,
       offers: offers,
       destinations: destinations,
       onDataChange: this.handleEventChange,
+      onModeChange: this.handleModeChange,
     });
     eventPresenter.init(event);
     this.eventPresenters.set(event.id, eventPresenter);
