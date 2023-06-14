@@ -1,12 +1,12 @@
-import { render, replace } from '../framework/render.js';
+import { render } from '../framework/render.js';
 import ContentListView from '../view/content-list-view.js';
-import EventFormView from '../view/event-form-view.js';
-import EventView from '../view/event-view.js';
 import EmptyContentListMessageView from '../view/empty-content-list-message-view.js';
-import { isEscapeKey } from '../utils.js';
+import EventPresenter from './event-presenter.js';
+import { updateItem } from '../utils.js';
 
 export default class ContentPresenter {
   contentListComponent = new ContentListView();
+  eventPresenters = new Map();
 
   constructor({ contentContainer, eventsModel }) {
     this.contentContainer = contentContainer;
@@ -18,66 +18,56 @@ export default class ContentPresenter {
     this.offers = [...this.eventsModel.getOffers()];
     this.destinations = [...this.eventsModel.getDestinations()];
 
-    render(this.contentListComponent, this.contentContainer);
+    this.renderContentBoard();
     if (!this.events.length) {
       this.renderMessage();
     } else {
-      for (const event of this.events) {
-        this.renderEvent({
-          event: event,
-          offers: this.offers,
-          destinations: this.destinations,
-        });
-      }
+      this.renderEvents();
     }
   }
 
-  renderEvent({ event, offers, destinations }) {
-    const eventComponent = new EventView({
-      event,
-      offers,
-      destinations,
-      onEditClick: () => {
-        replaceEventToEventForm();
-        document.addEventListener('keydown', onEscKey);
-      },
+  handleEventChange = (updateEvent) => {
+    this.events = updateItem(this.events, updateEvent);
+    this.eventPresenters.get(updateEvent.id).init(updateEvent);
+  };
+
+  handleModeChange = () => {
+    this.eventPresenters.forEach((presenter) => presenter.resetView());
+  };
+
+  renderEvent(event, offers, destinations) {
+    const eventPresenter = new EventPresenter({
+      contentListComponent: this.contentListComponent,
+      offers: offers,
+      destinations: destinations,
+      onDataChange: this.handleEventChange,
+      onModeChange: this.handleModeChange,
     });
+    eventPresenter.init(event);
+    this.eventPresenters.set(event.id, eventPresenter);
+  }
 
-    const eventFormComponent = new EventFormView({
-      event,
-      offers,
-      destinations,
-      onFormSubmit: () => {
-        replaceEventFormToEvent();
-        document.removeEventListener('keydown', onEscKey);
-      },
-      onRollUpClick: () => {
-        replaceEventFormToEvent();
-        document.removeEventListener('keydown', onEscKey);
-      },
+  renderEvents() {
+    this.events.forEach((event) => {
+      this.renderEvent(
+        event,
+        this.eventsModel.getOffersByType(event.type),
+        this.eventsModel.getDestinationById(String(event.destination))
+      );
     });
+  }
 
-    function onEscKey(evt) {
-      if (isEscapeKey(evt)) {
-        evt.preventDefault();
-        replaceEventFormToEvent();
-        document.removeEventListener('keydown', onEscKey);
-      }
-    }
-
-    function replaceEventToEventForm() {
-      replace(eventFormComponent, eventComponent);
-    }
-
-    function replaceEventFormToEvent() {
-      replace(eventComponent, eventFormComponent);
-    }
-
-    render(eventComponent, this.contentListComponent.element);
+  clearEvents() {
+    this.eventPresenters.forEach((presenter) => presenter.destroy());
+    this.eventPresenters.clear();
   }
 
   renderMessage() {
     const emptyContentListMessageComponent = new EmptyContentListMessageView();
     render(emptyContentListMessageComponent, this.contentListComponent.element);
+  }
+
+  renderContentBoard() {
+    render(this.contentListComponent, this.contentContainer);
   }
 }

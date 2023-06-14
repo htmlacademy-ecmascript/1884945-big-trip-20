@@ -6,36 +6,21 @@ import {
   TIME_FORMAT,
 } from '../utils.js';
 
-const createEventTemplate = (event, allOffers, allDestinations) => {
-  const { basePrice, dateFrom, dateTo, destination, isFavorite, type, offers } =
-    event;
+const createEventTemplate = (event, offersByType, destinationById) => {
+  const { basePrice, dateFrom, dateTo, offers, type, isFavorite } = event;
 
   const date = humanizeEventDate(dateFrom, DATE_FORMAT);
   const timeFrom = humanizeEventDate(dateFrom, TIME_FORMAT);
   const timeTo = humanizeEventDate(dateTo, TIME_FORMAT);
   const timeDuration = countTimeDuration(dateFrom, dateTo);
 
-  const getRandomDestination = (eventDestination) => {
-    const choosenDestination = allDestinations.find((item) =>
-      String(eventDestination).includes(item.id)
-    );
-    return choosenDestination.name;
-  };
-
   const favoriteClass = isFavorite ? 'event__favorite-btn--active' : '';
 
-  const getRandomOffer = (eventType, eventOffers) => {
-    const eventTypeOffers = allOffers.find(
-      (item) => item.type === eventType
-    ).offers;
-    const choosenOffers = eventTypeOffers.filter((item) =>
-      eventOffers.includes(item.id)
-    );
-    return choosenOffers;
-  };
+  const findChosenOffers = (chosenOffers) =>
+    offersByType.filter((item) => chosenOffers.includes(item.id));
 
   function createOfferTemplate() {
-    return getRandomOffer(type, offers)
+    return findChosenOffers(offers)
       .map(
         (item) => `
       <li class="event__offer">
@@ -55,7 +40,7 @@ const createEventTemplate = (event, allOffers, allDestinations) => {
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
         </div>
-        <h3 class="event__title">${type} ${getRandomDestination(destination)}
+        <h3 class="event__title">${type} ${destinationById.name}
         </h3>
         <div class="event__schedule">
           <p class="event__time">
@@ -85,16 +70,21 @@ const createEventTemplate = (event, allOffers, allDestinations) => {
     </li>`;
 };
 export default class EventView extends AbstractView {
-  constructor({ event, offers, destinations, onEditClick }) {
+  constructor({ event, offers, destinations, onEditClick, onFavoriteClick }) {
     super();
     this.event = event;
     this.offers = offers;
     this.destinations = destinations;
     this.handleEditClick = onEditClick;
+    this.handleFavoriteClick = onFavoriteClick;
 
     this.element
       .querySelector('.event__rollup-btn')
       .addEventListener('click', this.editClickHandler);
+
+    this.element
+      .querySelector('.event__favorite-btn')
+      .addEventListener('click', this.favoriteClickHandler);
   }
 
   get template() {
@@ -104,5 +94,10 @@ export default class EventView extends AbstractView {
   editClickHandler = (evt) => {
     evt.preventDefault();
     this.handleEditClick();
+  };
+
+  favoriteClickHandler = (evt) => {
+    evt.preventDefault();
+    this.handleFavoriteClick();
   };
 }

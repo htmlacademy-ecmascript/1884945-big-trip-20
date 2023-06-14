@@ -79,6 +79,9 @@ const isEventDateInPresent = (startDate, endDate) => {
   return startIsSameOrBeforeToday && endIsSameOrAfterToday;
 };
 
+const updateItem = (items, update) =>
+  items.map((item) => (item.id === update.id ? update : item));
+
 export {
   humanizeEventDate,
   countTimeDuration,
@@ -91,4 +94,5 @@ export {
   isEventDateExpired,
   isEventDateInFuture,
   isEventDateInPresent,
+  updateItem,
 };
